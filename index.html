@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haber Process Interactive Applet</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom slider styling for polished look */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #1d4ed8;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #2563eb;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans pb-12 antialiased">
+
+    <header class="bg-slate-800 border-b border-slate-700 py-6 px-4 sm:px-8 mb-8 shadow-md">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 text-xl">
+                    <i class="fa-solid fa-flask"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Haber Process Conditions Explorer</h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Interactive Chemistry Exploration</p>
+                </div>
+            </div>
+
+            <label class="flex items-center gap-3 bg-slate-900 px-5 py-3 rounded-xl border border-amber-500/40 hover:border-amber-400 transition-colors cursor-pointer select-none shadow-md">
+                <input type="checkbox" id="catalystCheckbox" class="w-5 h-5 rounded border-slate-700 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-900 accent-amber-500" onchange="updateApplet()">
+                <span class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-cubes-stacked text-amber-400"></i>
+                    Add finely-divided iron catalyst
+                </span>
+            </label>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+        <!-- 1. Top Raw Materials Section -->
+        <section class="bg-slate-800 rounded-2xl p-6 border border-slate-700 shadow-xl">
+            <div class="flex items-start gap-4">
+                <div class="w-9 h-9 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 mt-0.5 border border-blue-500/20">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <p class="text-slate-200 text-base sm:text-lg leading-relaxed font-normal">
+                    The raw materials used in the Haber process are nitrogen gas and hydrogen gas. Nitrogen gas is first obtained from the fractional distillation of liquid air, and hydrogen gas is obtained from the cracking, or breaking down, of crude oil.
+                </p>
+            </div>
+        </section>
+
+        <!-- 2. Section 1: Constant Pressure of 250 atm -->
+        <section class="bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-700 shadow-xl space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-700/80 pb-4">
+                <h2 class="text-xl font-bold text-white flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-lg bg-red-500/20 text-red-400 text-sm font-bold flex items-center justify-center">1</span>
+                    Constant pressure of 250 atm
+                </h2>
+                <span class="text-xs bg-slate-700/80 text-slate-300 px-3 py-1 rounded-full font-mono">Variable: Temperature</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Slider & Controls (7 Cols) -->
+                <div class="lg:col-span-7 space-y-5">
+                    <div class="flex justify-between items-center">
+                        <label for="tempSlider" class="text-sm font-medium text-slate-300">Temperature:</label>
+                        <span id="tempDisplay" class="text-2xl font-black text-red-400 font-mono">450°C</span>
+                    </div>
+
+                    <input type="range" id="tempSlider" min="0" max="6" step="1" value="4" 
+                           class="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                           oninput="updateApplet()">
+
+                    <!-- Discrete Labels -->
+                    <div class="flex justify-between text-xs text-slate-400 font-mono px-1">
+                        <span class="hover:text-white cursor-pointer" onclick="setTempIdx(0)">25°C</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setTempIdx(1)">150°C</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setTempIdx(2)">250°C</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setTempIdx(3)">350°C</span>
+                        <span class="hover:text-white cursor-pointer text-amber-400 font-bold" onclick="setTempIdx(4)">450°C</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setTempIdx(5)">550°C</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setTempIdx(6)">650°C</span>
+                    </div>
+                </div>
+
+                <!-- Indicator Outcome Boxes (5 Cols) -->
+                <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                    <!-- Rate Box -->
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-inner space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rate of reaction</span>
+                            <i class="fa-solid fa-gauge-high text-amber-400"></i>
+                        </div>
+                        <div id="tempRateVal" class="text-2xl font-black text-amber-400 font-mono">60%</div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                            <div id="tempRateBar" class="bg-gradient-to-r from-amber-500 to-red-500 h-2.5 rounded-full transition-all duration-300" style="width: 60%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Yield Box -->
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-inner space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Yield of ammonia gas (%)</span>
+                            <i class="fa-solid fa-flask-vial text-emerald-400"></i>
+                        </div>
+                        <div id="tempYieldVal" class="text-2xl font-black text-emerald-400 font-mono">28%</div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                            <div id="tempYieldBar" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Section 2: Constant Temperature of 450°C -->
+        <section class="bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-700 shadow-xl space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-700/80 pb-4">
+                <h2 class="text-xl font-bold text-white flex items-center gap-3">
+                    <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 text-sm font-bold flex items-center justify-center">2</span>
+                    Constant temperature of 450°C
+                </h2>
+                <span class="text-xs bg-slate-700/80 text-slate-300 px-3 py-1 rounded-full font-mono">Variable: Pressure</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Slider & Controls (7 Cols) -->
+                <div class="lg:col-span-7 space-y-5">
+                    <div class="flex justify-between items-center">
+                        <label for="pressSlider" class="text-sm font-medium text-slate-300">Pressure:</label>
+                        <span id="pressDisplay" class="text-2xl font-black text-blue-400 font-mono">250 atm</span>
+                    </div>
+
+                    <input type="range" id="pressSlider" min="0" max="6" step="1" value="2" 
+                           class="w-full h-3 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+                           oninput="updateApplet()">
+
+                    <!-- Discrete Labels -->
+                    <div class="flex justify-between text-xs text-slate-400 font-mono px-1">
+                        <span class="hover:text-white cursor-pointer" onclick="setPressIdx(0)">0 atm</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setPressIdx(1)">150 atm</span>
+                        <span class="hover:text-white cursor-pointer text-amber-400 font-bold" onclick="setPressIdx(2)">250 atm</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setPressIdx(3)">350 atm</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setPressIdx(4)">450 atm</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setPressIdx(5)">550 atm</span>
+                        <span class="hover:text-white cursor-pointer" onclick="setPressIdx(6)">650 atm</span>
+                    </div>
+                </div>
+
+                <!-- Indicator Outcome Boxes (5 Cols) -->
+                <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                    <!-- Rate Box -->
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-inner space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rate of reaction</span>
+                            <i class="fa-solid fa-gauge-high text-amber-400"></i>
+                        </div>
+                        <div id="pressRateVal" class="text-2xl font-black text-amber-400 font-mono">60%</div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                            <div id="pressRateBar" class="bg-gradient-to-r from-amber-500 to-red-500 h-2.5 rounded-full transition-all duration-300" style="width: 60%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Yield Box -->
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 shadow-inner space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Yield of ammonia gas (%)</span>
+                            <i class="fa-solid fa-flask-vial text-emerald-400"></i>
+                        </div>
+                        <div id="pressYieldVal" class="text-2xl font-black text-emerald-400 font-mono">28%</div>
+                        <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                            <div id="pressYieldBar" class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-2.5 rounded-full transition-all duration-300" style="width: 28%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Section 1: Temperature Explorer Data (Constant 250 atm)
+        const tempValues = [25, 150, 250, 350, 450, 550, 650];
+        const tempYields = [92, 82, 60, 38, 28, 12, 5]; // Yield decreases, never 100%
+        const tempRatesBase = [1, 6, 18, 38, 60, 82, 98]; // Rate increases
+        const tempRatesCat  = [15, 45, 75, 90, 96, 99, 100]; // Boosted by catalyst
+
+        // Section 2: Pressure Explorer Data (Constant 450°C)
+        const pressValues = [0, 150, 250, 350, 450, 550, 650];
+        const pressYields = [0, 18, 28, 38, 46, 53, 59]; // Yield increases, never 100%
+        const pressRatesBase = [0, 45, 60, 72, 82, 90, 96]; // Rate increases
+        const pressRatesCat  = [0, 85, 96, 98, 99, 99.5, 100]; // Boosted by catalyst
+
+        function setTempIdx(idx) {
+            document.getElementById('tempSlider').value = idx;
+            updateApplet();
+        }
+
+        function setPressIdx(idx) {
+            document.getElementById('pressSlider').value = idx;
+            updateApplet();
+        }
+
+        function updateApplet() {
+            const isCatalyst = document.getElementById('catalystCheckbox').checked;
+
+            // Update Section 1: Temperature
+            const tempIdx = parseInt(document.getElementById('tempSlider').value);
+            const tempDeg = tempValues[tempIdx];
+            const tempYield = tempYields[tempIdx];
+            const tempRate = isCatalyst ? tempRatesCat[tempIdx] : tempRatesBase[tempIdx];
+
+            document.getElementById('tempDisplay').innerText = tempDeg + '°C';
+            document.getElementById('tempYieldVal').innerText = tempYield + '%';
+            document.getElementById('tempYieldBar').style.width = tempYield + '%';
+            document.getElementById('tempRateVal').innerText = Math.round(tempRate) + '%';
+            document.getElementById('tempRateBar').style.width = Math.min(100, tempRate) + '%';
+
+            // Update Section 2: Pressure
+            const pressIdx = parseInt(document.getElementById('pressSlider').value);
+            const pressAtm = pressValues[pressIdx];
+            const pressYield = pressYields[pressIdx];
+            const pressRate = isCatalyst ? pressRatesCat[pressIdx] : pressRatesBase[pressIdx];
