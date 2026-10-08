@@ -264,3 +264,17 @@
             const pressAtm = pressValues[pressIdx];
             const pressYield = pressYields[pressIdx];
             const pressRate = isCatalyst ? pressRatesCat[pressIdx] : pressRatesBase[pressIdx];
+
+            document.getElementById('pressDisplay').innerText = pressAtm + ' atm';
+            document.getElementById('pressYieldVal').innerText = pressYield + '%';
+            document.getElementById('pressYieldBar').style.width = pressYield + '%';
+            document.getElementById('pressRateVal').innerText = Math.round(pressRate) + '%';
+            document.getElementById('pressRateBar').style.width = Math.min(100, pressRate) + '%';
+        }
+
+        window.onload = function() {
+            updateApplet();
+        };
+    </script>
+</body>
+</html>
